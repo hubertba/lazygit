@@ -30,7 +30,7 @@ func handleForceCheckout(g *gocui.Gui, v *gocui.View) error {
 }
 
 func handleCheckoutByName(g *gocui.Gui, v *gocui.View) error {
-	createPromptPanel(g, v, "Branch Name:", nil, func(g *gocui.Gui, v *gocui.View) error {
+	createPromptPanel(g, v, "Branch Name:", func(g *gocui.Gui, v *gocui.View) error {
 		if output, err := gitCheckout(trimmedContent(v), false); err != nil {
 			return createErrorPanel(g, output)
 		}
@@ -41,7 +41,7 @@ func handleCheckoutByName(g *gocui.Gui, v *gocui.View) error {
 
 func handleNewBranch(g *gocui.Gui, v *gocui.View) error {
 	branch := state.Branches[0]
-	createPromptPanel(g, v, "New Branch Name (Branch is off of "+branch.Name+")", nil, func(g *gocui.Gui, v *gocui.View) error {
+	createPromptPanel(g, v, "New Branch Name (Branch is off of "+branch.Name+")", func(g *gocui.Gui, v *gocui.View) error {
 		if output, err := gitNewBranch(trimmedContent(v)); err != nil {
 			return createErrorPanel(g, output)
 		}
@@ -51,7 +51,7 @@ func handleNewBranch(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
-func handleDeleteBranch(g *gocui.Gui, v *gocui.View) error {	
+func handleDeleteBranch(g *gocui.Gui, v *gocui.View) error {
 	checkedOutBranch := state.Branches[0]
 	selectedBranch := getSelectedBranch(v)
 	if checkedOutBranch.Name == selectedBranch.Name {
@@ -59,12 +59,11 @@ func handleDeleteBranch(g *gocui.Gui, v *gocui.View) error {
 	}
 	return createConfirmationPanel(g, v, "Delete Branch", "Are you sure you want delete the branch "+selectedBranch.Name+" ?", func(g *gocui.Gui, v *gocui.View) error {
 		if output, err := gitDeleteBranch(selectedBranch.Name); err != nil {
-                        return createErrorPanel(g, output)
-                }
-        return refreshSidePanels(g)
-	}, nil)	
+			return createErrorPanel(g, output)
+		}
+		return refreshSidePanels(g)
+	}, nil)
 }
-
 
 func handleMerge(g *gocui.Gui, v *gocui.View) error {
 	checkedOutBranch := state.Branches[0]
@@ -91,7 +90,7 @@ func renderBranchesOptions(g *gocui.Gui) error {
 		"m":       "merge",
 		"c":       "checkout by name",
 		"n":       "new branch",
-		"d":       "delte branch",
+		"d":       "delete branch",
 		"← → ↑ ↓": "navigate",
 	})
 }
